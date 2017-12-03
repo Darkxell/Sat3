@@ -29,6 +29,8 @@ public class CnfConvertor {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
+		ModelCreator.createModel(predicates);
 	}
 
 	/**
