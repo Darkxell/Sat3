@@ -29,7 +29,7 @@ public class CnfConvertor {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
 		ModelCreator.createModel(predicates);
 	}
 
@@ -48,13 +48,15 @@ public class CnfConvertor {
 	}
 
 	public static void readLine(String line, int number) {
-		if (line.startsWith("c") || line.startsWith("p") || line.startsWith("%") || line.startsWith("0"))
+		if (line.startsWith("c") || line.startsWith("p") || line.startsWith("%") || line.startsWith("0")
+				|| line.length() == 0)
 			return;
 		else if (line.startsWith(" "))
 			line = line.substring(1);
 		String[] values = line.split(" ");
-		predicates.add(new Predicate3sat(Integer.parseInt(values[0]), Integer.parseInt(values[1]),
-				Integer.parseInt(values[2])));
+		Predicate3sat toadd = new Predicate3sat(Integer.parseInt(values[0]), Integer.parseInt(values[1]),
+				Integer.parseInt(values[2]));
+		predicates.add(toadd);
 	}
 
 }
