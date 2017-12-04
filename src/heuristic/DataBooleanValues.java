@@ -6,6 +6,7 @@ import java.util.Map;
 public class DataBooleanValues {
 	
 	private Map<Integer, Boolean> values = new HashMap<Integer,Boolean>();
+	private Map<Integer, Boolean> used = new HashMap<Integer,Boolean>();
 	
 	public DataBooleanValues() {
 		
@@ -16,6 +17,9 @@ public class DataBooleanValues {
 	}
 	
 	public void delValue(int value) {
+		if(this.isValuePresent(value)) {
+			used.put(value, values.get(value));
+		}
 		values.remove(value);
 	}
 	
