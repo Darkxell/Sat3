@@ -25,5 +25,41 @@ public class PredicateMetaData {
 		return predicate.data1 + " / " + predicate.data2 + " / " + predicate.data3;
 		
 	}
+	
+	public void updateDatas(int i) {
+		if(predicate.data1 == i || predicate.data2 == i || predicate.data3 == i) {
+			isTrue = true;
+		}
+		if (predicate.data1 == -i) {
+			clauseSize -=1;
+			isD1False = true;
+		}
+		if (predicate.data2 == -i) {
+			clauseSize -=1;
+			isD2False = true;
+		}
+		if (predicate.data3 == -i) {
+			clauseSize -=1;
+			isD3False = true;
+		}
+	}
+	
+	public int getUnitary() {
+		if(clauseSize == 1) {
+			if(isD1False && isD2False) return predicate.data3;
+			if(isD2False && isD3False) return predicate.data1;
+			if(isD3False && isD1False) return predicate.data2;
+		}
+		return 0;
+	}
+
+	public boolean isTrue() {
+		return isTrue;
+	}
+
+	public int getClauseSize() {
+		return clauseSize;
+	}
+	
 
 }
