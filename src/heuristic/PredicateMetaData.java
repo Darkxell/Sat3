@@ -44,6 +44,10 @@ public class PredicateMetaData {
 		}
 	}
 	
+	public void reverseUpdateDatas(int i) {
+		//TODO : reverse isDXFalse, isTrue, clauseSize
+	}
+	
 	public int getUnitary() {
 		if(clauseSize == 1) {
 			if(isD1False && isD2False) return predicate.data3;

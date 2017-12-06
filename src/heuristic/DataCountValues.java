@@ -6,6 +6,7 @@ import java.util.Map;
 public class DataCountValues {
 	
 	private Map<Integer, Integer> counts = new HashMap<Integer,Integer>();
+	private Map<Integer, Integer> used = new HashMap<Integer,Integer>();
 	
 	public DataCountValues() {
 		
@@ -18,6 +19,13 @@ public class DataCountValues {
 		else {
 			counts.put(value, 1);
 		}
+	}
+	
+	public void delCount(int value) {
+		if(this.isPresent(value)) {
+			used.put(value, counts.get(value));
+		}
+		counts.remove(value);
 	}
 	
 	public boolean isPresent(int value) {

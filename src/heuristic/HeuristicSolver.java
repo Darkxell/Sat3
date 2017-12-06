@@ -33,11 +33,13 @@ public class HeuristicSolver {
 		}*/
 		
 		currentNode = null;
+		boolean nextBranch = true;
 		
 		//parcours de l'arbre tant qu'on a pas soit la solution, soit parcouru tout l'arbre
 		while(!isDone) {
 			//TODO : parcourir l'arbre DPLL
 			//TODO : heuristique HL
+			boolean contrad = false;
 			int unitary = 0;
 			int currentValue = 0;
 			
@@ -56,15 +58,26 @@ public class HeuristicSolver {
 			
 			//on crée le noeud de l'arbre
 			currentNode = new Node(Math.abs(currentValue), currentNode);
+			if(currentNode.getFather() != null) {
+				if(nextBranch) {
+					currentNode.getFather().setLeafTrue(currentNode);
+				}
+				else {
+					currentNode.getFather().setLeafFalse(currentNode);
+				}
+			}
 			
 			//si la valeur du noeud est positive, on associe sa valeur absolue à true, false sinon
-			boolean nextBranch = currentValue>0;
+			nextBranch = currentValue>0;
 			dataBool.addValue(Math.abs(currentValue), nextBranch);
 			
-			//on met à jour les prédicats pour considérer la nouvelle valeur
+			
+			//on met à jour les prédicats pour considérer la nouvelle valeur. 
+			//si un prédicat est entièrement faux, alors on a une contradiction
 			for(PredicateMetaData pred : predicatesMetaDatas) {
 				pred.updateDatas(currentValue);
 				if(pred.isTrue()) predicatesTrue.add(pred);
+				if(pred.getClauseSize() == 0 && !pred.isTrue()) contrad = true;
 			}
 			
 			//si tout les prédicats sont vrais, alors la requête est satisfiable
@@ -75,10 +88,20 @@ public class HeuristicSolver {
 			
 			//si on remonte à la racine après avoir des contradictions des deux côtés, alors la requête n'est pas satisfiable
 			//(= toute les feuilles contradictoires)
-			if(currentNode.isLeafTrueContradiction() && currentNode.isLeafFalseContradiction()) {
+			if(currentNode.isLeafTrueContradiction() && currentNode.isLeafFalseContradiction() && currentNode.getFather() == null) {
 				isDone = true;
 				isSatisfiable = false;
 			}
+			
+			//si on a une contradiction, il faut remonter l'arbre
+			if(contrad) {
+				for(PredicateMetaData pred : predicatesMetaDatas){
+					if(pred.isTrue()) predicatesTrue.remove(pred);
+					pred.updateDatas(currentValue); //do method
+				}
+				currentNode = currentNode.getFather();
+			}
+			
 			
 		}
 		
