@@ -59,17 +59,17 @@ public class PredicateMetaData {
 			if(!isD2False) values.addCount(predicate.data2);
 			if(!isD3False) values.addCount(predicate.data3);
 		}
-		if (predicate.data1 == -i) {
+		else if (predicate.data1 == -i) {
 			clauseSize +=1;
 			isD1False = false;
 			values.addCount(predicate.data1);
 		}
-		if (predicate.data2 == -i) {
+		else if (predicate.data2 == -i) {
 			clauseSize +=1;
 			isD2False = false;
 			values.addCount(predicate.data2);
 		}
-		if (predicate.data3 == -i) {
+		else if (predicate.data3 == -i) {
 			clauseSize +=1;
 			isD3False = false;
 			values.addCount(predicate.data3);

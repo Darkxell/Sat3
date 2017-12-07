@@ -38,8 +38,6 @@ public class HeuristicSolver {
 		
 		//parcours de l'arbre tant qu'on a pas soit la solution, soit parcouru tout l'arbre
 		while(!isDone) {
-			//TODO : parcourir l'arbre DPLL
-			//TODO : heuristique HL
 			boolean same = false;
 			boolean contrad = false;
 			int unitary = 0;
@@ -58,6 +56,7 @@ public class HeuristicSolver {
 				if(currentNode.isLeafTrueContradiction()) currentValue = -currentNode.getValue();
 				else currentValue = currentNode.getValue();
 				same = true;
+				//TODO : remonter les counts avant de changer la valeur
 				System.out.println("on stagne");
 			}
 			//sinon on recherche la valeur selon l'heuristique HL
@@ -78,7 +77,7 @@ public class HeuristicSolver {
 				}
 			}
 			
-			System.out.println(currentValue);
+			System.out.println(currentValue + " count : " + dataCount.get(currentValue));
 			
 			//on ne crée un noeud que s'il n'existe pas déjà
 			if(!same) {

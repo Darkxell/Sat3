@@ -25,6 +25,10 @@ public class DataCountValues {
 		counts.put(value, counts.get(value)-1);
 	}
 	
+	public int get(int value) {
+		if(isPresent(value)) return counts.get(value);
+		return 0;
+	}
 	
 	public boolean isPresent(int value) {
 		return counts.containsKey(value);
