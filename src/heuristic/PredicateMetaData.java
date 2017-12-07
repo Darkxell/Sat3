@@ -26,26 +26,54 @@ public class PredicateMetaData {
 		
 	}
 	
-	public void updateDatas(int i) {
+	public void updateDatas(int i, DataCountValues values) {
 		if(predicate.data1 == i || predicate.data2 == i || predicate.data3 == i) {
 			isTrue = true;
+			clauseSize -=1;
+			if(!isD1False) values.removeCount(predicate.data1);
+			if(!isD2False) values.removeCount(predicate.data2);
+			if(!isD3False) values.removeCount(predicate.data3);
 		}
-		if (predicate.data1 == -i) {
+		else if (predicate.data1 == -i) {
 			clauseSize -=1;
 			isD1False = true;
+			values.removeCount(predicate.data1);
 		}
-		if (predicate.data2 == -i) {
+		else if (predicate.data2 == -i) {
 			clauseSize -=1;
 			isD2False = true;
+			values.removeCount(predicate.data2);
 		}
-		if (predicate.data3 == -i) {
+		else if (predicate.data3 == -i) {
 			clauseSize -=1;
 			isD3False = true;
+			values.removeCount(predicate.data3);
 		}
 	}
 	
-	public void reverseUpdateDatas(int i) {
-		//TODO : reverse isDXFalse, isTrue, clauseSize
+	public void reverseUpdateDatas(int i, DataCountValues values) {
+		if(predicate.data1 == i || predicate.data2 == i || predicate.data3 == i) {
+			isTrue = false;
+			clauseSize +=1;
+			if(!isD1False) values.addCount(predicate.data1);
+			if(!isD2False) values.addCount(predicate.data2);
+			if(!isD3False) values.addCount(predicate.data3);
+		}
+		if (predicate.data1 == -i) {
+			clauseSize +=1;
+			isD1False = false;
+			values.addCount(predicate.data1);
+		}
+		if (predicate.data2 == -i) {
+			clauseSize +=1;
+			isD2False = false;
+			values.addCount(predicate.data2);
+		}
+		if (predicate.data3 == -i) {
+			clauseSize +=1;
+			isD3False = false;
+			values.addCount(predicate.data3);
+		}
 	}
 	
 	public int getUnitary() {

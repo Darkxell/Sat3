@@ -5,7 +5,7 @@ public class Node {
 	private Node father;
 	private Node leafTrue;
 	private Node leafFalse;
-	private int value;
+	private int value; //valeur mise à true (ex : si 5 = false, alors value = -5)
 	private boolean leafTrueContradiction;
 	private boolean leafFalseContradiction;
 	
@@ -21,6 +21,7 @@ public class Node {
 	}
 
 	public Node getLeafTrue() {
+		if(leafFalse == null) return null;
 		return leafTrue;
 	}
 
@@ -29,6 +30,7 @@ public class Node {
 	}
 
 	public Node getLeafFalse() {
+		if(leafFalse == null) return null;
 		return leafFalse;
 	}
 

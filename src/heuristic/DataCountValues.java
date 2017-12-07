@@ -5,8 +5,8 @@ import java.util.Map;
 
 public class DataCountValues {
 	
+	//contient des valeurs relatives
 	private Map<Integer, Integer> counts = new HashMap<Integer,Integer>();
-	private Map<Integer, Integer> used = new HashMap<Integer,Integer>();
 	
 	public DataCountValues() {
 		
@@ -21,12 +21,10 @@ public class DataCountValues {
 		}
 	}
 	
-	public void delCount(int value) {
-		if(this.isPresent(value)) {
-			used.put(value, counts.get(value));
-		}
-		counts.remove(value);
+	public void removeCount(int value) {
+		counts.put(value, counts.get(value)-1);
 	}
+	
 	
 	public boolean isPresent(int value) {
 		return counts.containsKey(value);

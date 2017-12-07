@@ -5,6 +5,7 @@ import java.util.Map;
 
 public class DataBooleanValues {
 	
+	//ne contient que les valeurs absolues
 	private Map<Integer, Boolean> values = new HashMap<Integer,Boolean>();
 	
 	public DataBooleanValues() {
@@ -13,6 +14,10 @@ public class DataBooleanValues {
 	
 	public void addValue(int value, boolean bool) {
 		values.put(value, bool);
+	}
+	
+	public void removeValue(int value) {
+		
 	}
 	
 	public boolean isValuePresent(int value) {

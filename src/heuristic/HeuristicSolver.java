@@ -34,57 +34,90 @@ public class HeuristicSolver {
 		
 		currentNode = null;
 		boolean nextBranch = true;
+		int currentValue = 0;
 		
 		//parcours de l'arbre tant qu'on a pas soit la solution, soit parcouru tout l'arbre
 		while(!isDone) {
 			//TODO : parcourir l'arbre DPLL
 			//TODO : heuristique HL
+			boolean same = false;
 			boolean contrad = false;
 			int unitary = 0;
-			int currentValue = 0;
 			
-			//recherche d'une valeur unitaire
-			for(PredicateMetaData pred : predicatesMetaDatas) {
-				unitary = pred.getUnitary();
-			}
 			
-			//si elle existe, on la prend, sinon on prend la valeur la plus fréquente
-			if(unitary !=0) {
-				currentValue = unitary;
+			//si la branche est contradictoire des deux côtés, on remonte
+			if(currentNode != null && currentNode.isLeafTrueContradiction() && currentNode.isLeafFalseContradiction()) {
+				contrad = true;
+				same = true;
+				if(dataBool.getBool(currentNode.getValue())) currentValue = currentNode.getValue();
+				else currentValue = -currentNode.getValue();
+				System.out.println("on remonte");
+			}			
+			//si la branche est contradictoire que d'un côté, on teste l'autre côté
+			else if(currentNode != null && ((currentNode.isLeafTrueContradiction() && nextBranch) || (currentNode.isLeafFalseContradiction() && !nextBranch))) {
+				if(currentNode.isLeafTrueContradiction()) currentValue = -currentNode.getValue();
+				else currentValue = currentNode.getValue();
+				same = true;
+				System.out.println("on stagne");
 			}
+			//sinon on recherche la valeur selon l'heuristique HL
 			else {
-				currentValue = dataCount.getMoreFrequent();
-			}
-			
-			//on crée le noeud de l'arbre
-			currentNode = new Node(Math.abs(currentValue), currentNode);
-			if(currentNode.getFather() != null) {
-				if(nextBranch) {
-					currentNode.getFather().setLeafTrue(currentNode);
+				System.out.println("on descend");
+				//recherche d'une valeur unitaire
+				for(PredicateMetaData pred : predicatesMetaDatas) {
+					unitary = pred.getUnitary();
+				}
+				
+				
+				//si elle existe, on la prend, sinon on prend la valeur la plus fréquente
+				if(unitary !=0) {
+					currentValue = unitary;
 				}
 				else {
-					currentNode.getFather().setLeafFalse(currentNode);
+					currentValue = dataCount.getMoreFrequent();
 				}
 			}
 			
-			//si la valeur du noeud est positive, on associe sa valeur absolue à true, false sinon
-			nextBranch = currentValue>0;
-			dataBool.addValue(Math.abs(currentValue), nextBranch);
+			System.out.println(currentValue);
 			
-			
-			//on met à jour les prédicats pour considérer la nouvelle valeur. 
-			//si un prédicat est entièrement faux, alors on a une contradiction
-			for(PredicateMetaData pred : predicatesMetaDatas) {
-				pred.updateDatas(currentValue);
-				if(pred.isTrue()) predicatesTrue.add(pred);
-				if(pred.getClauseSize() == 0 && !pred.isTrue()) contrad = true;
+			//on ne crée un noeud que s'il n'existe pas déjà
+			if(!same) {
+				//on crée le noeud de l'arbre
+				currentNode = new Node(Math.abs(currentValue), currentNode);
+				if(currentNode.getFather() != null) {
+					if(nextBranch) {
+						currentNode.getFather().setLeafTrue(currentNode);
+					}
+					else {
+						currentNode.getFather().setLeafFalse(currentNode);
+					}
+				}
 			}
 			
+			
+			//seulement si on compte descendre
+			if(!contrad) {
+				//si la valeur du noeud est positive, on associe sa valeur absolue à true, false sinon
+				nextBranch = currentValue>0;
+				dataBool.addValue(Math.abs(currentValue), nextBranch);
+				
+				
+				//on met à jour les prédicats pour considérer la nouvelle valeur. 
+				//si un prédicat est entièrement faux, alors on a une contradiction
+				for(PredicateMetaData pred : predicatesMetaDatas) {
+					pred.updateDatas(currentValue, dataCount);
+					if(pred.isTrue()) predicatesTrue.add(pred);
+					if(pred.getClauseSize() == 0 && !pred.isTrue()) contrad = true;
+				}
+			}
+			
+						
 			//si tout les prédicats sont vrais, alors la requête est satisfiable
 			if(predicatesMetaDatas.size() == predicatesTrue.size()) {
 				isDone = true;
 				isSatisfiable = true;
 			}
+			
 			
 			//si on remonte à la racine après avoir des contradictions des deux côtés, alors la requête n'est pas satisfiable
 			//(= toute les feuilles contradictoires)
@@ -93,13 +126,21 @@ public class HeuristicSolver {
 				isSatisfiable = false;
 			}
 			
+			
 			//si on a une contradiction, il faut remonter l'arbre
 			if(contrad) {
+				dataBool.removeValue(Math.abs(currentValue));
 				for(PredicateMetaData pred : predicatesMetaDatas){
 					if(pred.isTrue()) predicatesTrue.remove(pred);
-					pred.updateDatas(currentValue); //do method
+					pred.reverseUpdateDatas(currentValue, dataCount);
 				}
 				currentNode = currentNode.getFather();
+				if(!currentNode.isLeafFalseContradiction() && currentNode.getLeafFalse() != null) {
+					currentNode.setLeafFalseContradiction(true);
+				}
+				else if(!currentNode.isLeafTrueContradiction() && currentNode.getLeafTrue() != null) {
+					currentNode.setLeafTrueContradiction(true);
+				}
 			}
 			
 			
