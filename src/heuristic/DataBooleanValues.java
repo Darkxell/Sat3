@@ -17,7 +17,7 @@ public class DataBooleanValues {
 	}
 	
 	public void removeValue(int value) {
-		
+		values.remove(value);
 	}
 	
 	public boolean isValuePresent(int value) {
@@ -27,5 +27,18 @@ public class DataBooleanValues {
 	public boolean getBool(int value) {
 		return values.get(value);
 	}
+	
+	@Override
+	public String toString() {
+		String toReturn = "";
+		for(int i : values.keySet()) {
+			toReturn += i + " : " + values.get(i) + " / ";
+		}
+		return toReturn;
+	}
 
+	public int getLength() {
+		return values.size();
+	}
+	
 }

@@ -45,5 +45,14 @@ public class DataCountValues {
 		}		
 		return key;
 	}
+	
+	@Override
+	public String toString() {
+		String toReturn = "";
+		for(int i : counts.keySet()) {
+			toReturn += i + " : " + counts.get(i) + " / ";
+		}
+		return toReturn;
+	}
 
 }

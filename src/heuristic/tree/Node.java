@@ -5,7 +5,7 @@ public class Node {
 	private Node father;
 	private Node leafTrue;
 	private Node leafFalse;
-	private int value; //valeur mise à true (ex : si 5 = false, alors value = -5)
+	private int value; //valeur absolue
 	private boolean leafTrueContradiction;
 	private boolean leafFalseContradiction;
 	
@@ -18,10 +18,12 @@ public class Node {
 		this.father = father;
 		leafTrueContradiction = false;
 		leafFalseContradiction = false;
+		leafTrue = null;
+		leafFalse = null;
 	}
 
 	public Node getLeafTrue() {
-		if(leafFalse == null) return null;
+		if(leafTrue == null) return null;
 		return leafTrue;
 	}
 
@@ -60,6 +62,15 @@ public class Node {
 
 	public int getValue() {
 		return value;
+	}
+	
+	public Node drawParentRec(Node node) {
+		if (node == null) {
+			System.out.println(); 
+			return null;
+		}
+		System.out.print(node.value + " - ");
+		return drawParentRec(node.father);
 	}
 	
 	
