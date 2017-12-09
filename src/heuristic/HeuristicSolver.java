@@ -28,13 +28,11 @@ public class HeuristicSolver {
 			predicatesMetaDatas.add(new PredicateMetaData(pred));
 		}
 		
-		/*for(PredicateMetaData pmd : predicatesMetaDatas) {
-			System.out.println(pmd);
-		}*/
-		
 		currentNode = null;
 		boolean nextBranch = true;
 		int currentValue = 0;
+		
+		long timestamp = System.currentTimeMillis();
 		
 		//parcours de l'arbre tant qu'on a pas soit la solution, soit parcouru tout l'arbre
 		while(!isDone) {
@@ -42,17 +40,15 @@ public class HeuristicSolver {
 			boolean contrad = false;
 			int unitary = 0;
 			
-			
 			//si la branche est contradictoire des deux côtés, on remonte
 			if(currentNode != null && currentNode.isLeafTrueContradiction() && currentNode.isLeafFalseContradiction()) {
 				contrad = true;
 				same = true;
 				if(dataBool.getBool(currentNode.getValue())) currentValue = currentNode.getValue();
 				else currentValue = -currentNode.getValue();
-				//System.out.println("on remonte");
 			}			
 			//si la branche est contradictoire que d'un côté, on teste l'autre côté
-			else if(currentNode != null && ((currentNode.isLeafTrueContradiction() && nextBranch) || (currentNode.isLeafFalseContradiction() && !nextBranch))) {
+			else if(currentNode != null && ((currentNode.isLeafTrueContradiction() && dataBool.getBool(currentNode.getValue())/*&& nextBranch*/) || (currentNode.isLeafFalseContradiction() && !dataBool.getBool(currentNode.getValue())/*&& !nextBranch*/))) {
 				if(currentNode.isLeafTrueContradiction()) currentValue = -currentNode.getValue();
 				else currentValue = currentNode.getValue();
 				for(PredicateMetaData pred : predicatesMetaDatas){
@@ -60,11 +56,9 @@ public class HeuristicSolver {
 					if(!pred.isTrue()) predicatesTrue.remove(pred);
 				}
 				same = true;
-				//System.out.println("on stagne");
 			}
 			//sinon on recherche la valeur selon l'heuristique HL
 			else {
-				//System.out.println("on descend");
 				//recherche d'une valeur unitaire
 				for(PredicateMetaData pred : predicatesMetaDatas) {
 					unitary = pred.getUnitary();
@@ -80,10 +74,6 @@ public class HeuristicSolver {
 				}
 			}
 			
-			/*if(currentNode != null && currentNode.getFather() != null) {
-				System.out.println("\t" + currentValue + " count : " + dataCount.get(currentValue) + " LeafTrue : " + currentNode.isLeafTrueContradiction() + " LeafFalse : " + currentNode.isLeafFalseContradiction() + " next : " + nextBranch + " père : " + currentNode.getFather().getValue());
-			}
-			System.out.println("\t" + dataCount.toString());*/
 			
 			//on ne crée un noeud que s'il n'existe pas déjà
 			if(!same) {
@@ -104,8 +94,7 @@ public class HeuristicSolver {
 			
 			//seulement si on compte descendre
 			if(!contrad) {
-				//si la valeur du noeud est positive, on associe sa valeur absolue à true, false sinon
-				
+				//si la valeur du noeud est positive, on associe sa valeur absolue à true, false sinon			
 				dataBool.addValue(Math.abs(currentValue), nextBranch);
 				
 				
@@ -115,19 +104,13 @@ public class HeuristicSolver {
 					if(!predicatesTrue.contains(pred)) {
 						pred.updateDatas(currentValue, dataCount);
 						if(pred.isTrue()) predicatesTrue.add(pred);
-						if(pred.getClauseSize() == 0 && !pred.isTrue()) contrad = true;
+						if(pred.isFalse()) contrad = true;
 					}
 				}
 			}		
 			
-			/*if(currentNode != null && currentNode.getFather() != null) {
-				System.out.println("\t" + currentValue + " count : " + dataCount.get(currentValue) + " LeafTrue : " + currentNode.isLeafTrueContradiction() + " LeafFalse : " + currentNode.isLeafFalseContradiction() + " next : " + nextBranch + " père : " + currentNode.getFather().getValue());
-			}
-			System.out.println("\t" + dataCount.toString());*/
-			currentNode.drawParentRec(currentNode);
-			System.out.println(dataBool.toString());
-			System.out.println(predicatesMetaDatas.toString());
-			System.out.println(predicatesTrue.toString());
+			//Pour afficher l'arborescence
+			//currentNode.drawParentRec(currentNode);
 			
 			
 			//si tout les prédicats sont vrais, alors la requête est satisfiable
@@ -139,17 +122,18 @@ public class HeuristicSolver {
 			
 			//si on a une contradiction, il faut remonter l'arbre
 			if(contrad) {
-				//System.out.println("\t" + "je suis contradictoire !");
-				dataBool.removeValue(Math.abs(currentValue));
-				for(PredicateMetaData pred : predicatesMetaDatas){
-					pred.reverseUpdateDatas(currentValue, dataCount);
-					if(!pred.isTrue()) predicatesTrue.remove(pred);
-				}
-				currentNode = currentNode.getFather();
-				if(!currentNode.isLeafFalseContradiction() && currentNode.getLeafFalse() != null) {
+				if(currentNode.isLeafFalseContradiction() && currentNode.isLeafTrueContradiction()) {
+					dataBool.removeValue(Math.abs(currentValue));
+					for(PredicateMetaData pred : predicatesMetaDatas){
+						pred.reverseUpdateDatas(currentValue, dataCount);
+						if(!pred.isTrue()) predicatesTrue.remove(pred);
+					}
+					currentNode = currentNode.getFather();
+				}		
+				if(!currentNode.isLeafFalseContradiction() &&  !dataBool.getBool(currentNode.getValue())) {
 					currentNode.setLeafFalseContradiction(true);
 				}
-				if(!currentNode.isLeafTrueContradiction() && currentNode.getLeafTrue() != null) {
+				if(!currentNode.isLeafTrueContradiction() && dataBool.getBool(currentNode.getValue())) {
 					currentNode.setLeafTrueContradiction(true);
 				}
 			}
@@ -160,17 +144,11 @@ public class HeuristicSolver {
 				isDone = true;
 				isSatisfiable = false;
 			}
-			
-			/*try {
-				Thread.sleep(4);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}*/
 		}
 		
 		//T'as vraiment besoin d'un commentaire pour comprendre ça ?
-		if(isSatisfiable) System.out.println("Requête satisfiable");
-		else System.out.println("Requête non satisfiable");
+		if(isSatisfiable) System.out.println("Requête satisfiable\nTemps passé (en ms) : " + (System.currentTimeMillis() - timestamp) + "\nListe des variables assignées :\n" + dataBool.toString());
+		else System.out.println("Requête non satisfiable\nTemps passé (en ms) : " + (System.currentTimeMillis() - timestamp));
 
 	}
 

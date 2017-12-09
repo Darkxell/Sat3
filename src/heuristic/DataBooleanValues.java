@@ -32,7 +32,7 @@ public class DataBooleanValues {
 	public String toString() {
 		String toReturn = "";
 		for(int i : values.keySet()) {
-			toReturn += i + " : " + values.get(i) + " / ";
+			toReturn += i + ":" + values.get(i) + "/";
 		}
 		return toReturn;
 	}

@@ -28,7 +28,7 @@ public class PredicateMetaData {
 	
 	@Override
 	public String toString() {
-		return predicate.data1 + " / " + predicate.data2 + " / " + predicate.data3;
+		return predicate.data1 + " / " + predicate.data2 + " / " + predicate.data3 + "(" + isD1True + "/" + isD2True + "/" + isD3True + "/" + isD1False + "/" + isD2False + "/" + isD3False + ")(" + clauseSize + ")";
 		
 	}
 	
@@ -42,6 +42,7 @@ public class PredicateMetaData {
 			isTrue = true;
 			clauseSize -=1;
 			isD1True = true;
+			isD1False = false;
 		}
 		if (predicate.data2 == i) {
 			if(!isTrue) {
@@ -52,6 +53,7 @@ public class PredicateMetaData {
 			isTrue = true;
 			clauseSize -=1;
 			isD2True = true;
+			isD2False = false;
 		}
 		if (predicate.data3 == i) {
 			if(!isTrue) {
@@ -62,20 +64,24 @@ public class PredicateMetaData {
 			isTrue = true;
 			clauseSize -=1;
 			isD3True = true;
+			isD3False = false;
 		}
 		if (predicate.data1 == -i) {
 			clauseSize -=1;
 			isD1False = true;
+			isD1True = false;
 			if(!isTrue) values.removeCount(predicate.data1);
 		}
 		if (predicate.data2 == -i) {
 			clauseSize -=1;
 			isD2False = true;
+			isD2True = false;
 			if(!isTrue) values.removeCount(predicate.data2);
 		}
 		if (predicate.data3 == -i) {
 			clauseSize -=1;
 			isD3False = true;
+			isD3True = false;
 			if(!isTrue) values.removeCount(predicate.data3);
 		}
 	}
@@ -143,10 +149,15 @@ public class PredicateMetaData {
 	public boolean isTrue() {
 		return isTrue;
 	}
+	
+	public boolean isFalse() {
+		return isD1False && isD2False && isD3False;
+	}
 
 	public int getClauseSize() {
 		return clauseSize;
 	}
+	
 	
 
 }
