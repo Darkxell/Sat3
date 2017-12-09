@@ -5,7 +5,6 @@ import sattoglpk.Predicate3sat;
 public class PredicateMetaData {
 	
 	private Predicate3sat predicate;
-	private int clauseSize;
 	private boolean isTrue;
 	private boolean isD1True;
 	private boolean isD2True;
@@ -16,7 +15,6 @@ public class PredicateMetaData {
 
 	public PredicateMetaData(Predicate3sat predicate) {
 		this.predicate = predicate;
-		clauseSize = 3;
 		isTrue = false;
 		isD1True = false;
 		isD2True = false;
@@ -28,7 +26,7 @@ public class PredicateMetaData {
 	
 	@Override
 	public String toString() {
-		return predicate.data1 + " / " + predicate.data2 + " / " + predicate.data3 + "(" + isD1True + "/" + isD2True + "/" + isD3True + "/" + isD1False + "/" + isD2False + "/" + isD3False + ")(" + clauseSize + ")";
+		return predicate.data1 + " / " + predicate.data2 + " / " + predicate.data3 + "(" + isD1True + "/" + isD2True + "/" + isD3True + "/" + isD1False + "/" + isD2False + "/" + isD3False + ")";
 		
 	}
 	
@@ -40,7 +38,6 @@ public class PredicateMetaData {
 				if(!isD3False) values.removeCount(predicate.data3);
 			}
 			isTrue = true;
-			clauseSize -=1;
 			isD1True = true;
 			isD1False = false;
 		}
@@ -51,7 +48,6 @@ public class PredicateMetaData {
 				if(!isD3False) values.removeCount(predicate.data3);
 			}
 			isTrue = true;
-			clauseSize -=1;
 			isD2True = true;
 			isD2False = false;
 		}
@@ -62,24 +58,20 @@ public class PredicateMetaData {
 				values.removeCount(predicate.data3);
 			}
 			isTrue = true;
-			clauseSize -=1;
 			isD3True = true;
 			isD3False = false;
 		}
 		if (predicate.data1 == -i) {
-			clauseSize -=1;
 			isD1False = true;
 			isD1True = false;
 			if(!isTrue) values.removeCount(predicate.data1);
 		}
 		if (predicate.data2 == -i) {
-			clauseSize -=1;
 			isD2False = true;
 			isD2True = false;
 			if(!isTrue) values.removeCount(predicate.data2);
 		}
 		if (predicate.data3 == -i) {
-			clauseSize -=1;
 			isD3False = true;
 			isD3True = false;
 			if(!isTrue) values.removeCount(predicate.data3);
@@ -90,7 +82,6 @@ public class PredicateMetaData {
 		if(predicate.data1 == i) {
 			if (!isD2True && !isD3True) isTrue = false;
 			isD1True = false;
-			clauseSize +=1;
 			if(!isTrue) {
 				values.addCount(predicate.data1);
 				if(!isD2False) values.addCount(predicate.data2);
@@ -101,7 +92,6 @@ public class PredicateMetaData {
 		if(predicate.data2 == i) {
 			if (!isD1True && !isD3True) isTrue = false;
 			isD2True = false;
-			clauseSize +=1;
 			if(!isTrue) {
 				if(!isD1False) values.addCount(predicate.data1);
 				values.addCount(predicate.data2);
@@ -112,7 +102,6 @@ public class PredicateMetaData {
 		if(predicate.data3 == i) {
 			if (!isD2True && !isD1True) isTrue = false;
 			isD3True = false;
-			clauseSize +=1;
 			if(!isTrue) {
 				if(!isD1False) values.addCount(predicate.data1);
 				if(!isD2False) values.addCount(predicate.data2);
@@ -121,24 +110,21 @@ public class PredicateMetaData {
 			
 		}
 		if (predicate.data1 == -i) {
-			clauseSize +=1;
 			isD1False = false;
 			if(!isTrue) values.addCount(predicate.data1);
 		}
 		if (predicate.data2 == -i) {
-			clauseSize +=1;
 			isD2False = false;
 			if(!isTrue) values.addCount(predicate.data2);
 		}
 		if (predicate.data3 == -i) {
-			clauseSize +=1;
 			isD3False = false;
 			if(!isTrue) values.addCount(predicate.data3);
 		}
 	}
 	
 	public int getUnitary() {
-		if(clauseSize == 1) {
+		if((isD1False && isD2False && !isD3False && !isD3True) || (isD1False && isD3False && !isD2False && !isD2True) || (isD3False && isD2False && !isD1False && !isD1True)) {
 			if(isD1False && isD2False) return predicate.data3;
 			if(isD2False && isD3False) return predicate.data1;
 			if(isD3False && isD1False) return predicate.data2;
@@ -152,10 +138,6 @@ public class PredicateMetaData {
 	
 	public boolean isFalse() {
 		return isD1False && isD2False && isD3False;
-	}
-
-	public int getClauseSize() {
-		return clauseSize;
 	}
 	
 	

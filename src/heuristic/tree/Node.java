@@ -3,8 +3,6 @@ package heuristic.tree;
 public class Node {
 	
 	private Node father;
-	private Node leafTrue;
-	private Node leafFalse;
 	private int value; //valeur absolue
 	private boolean leafTrueContradiction;
 	private boolean leafFalseContradiction;
@@ -18,26 +16,6 @@ public class Node {
 		this.father = father;
 		leafTrueContradiction = false;
 		leafFalseContradiction = false;
-		leafTrue = null;
-		leafFalse = null;
-	}
-
-	public Node getLeafTrue() {
-		if(leafTrue == null) return null;
-		return leafTrue;
-	}
-
-	public void setLeafTrue(Node leafTrue) {
-		this.leafTrue = leafTrue;
-	}
-
-	public Node getLeafFalse() {
-		if(leafFalse == null) return null;
-		return leafFalse;
-	}
-
-	public void setLeafFalse(Node leafFalse) {
-		this.leafFalse = leafFalse;
 	}
 
 	public boolean isLeafTrueContradiction() {

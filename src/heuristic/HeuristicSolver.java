@@ -29,7 +29,6 @@ public class HeuristicSolver {
 		}
 		
 		currentNode = null;
-		boolean nextBranch = true;
 		int currentValue = 0;
 		
 		long timestamp = System.currentTimeMillis();
@@ -48,7 +47,7 @@ public class HeuristicSolver {
 				else currentValue = -currentNode.getValue();
 			}			
 			//si la branche est contradictoire que d'un côté, on teste l'autre côté
-			else if(currentNode != null && ((currentNode.isLeafTrueContradiction() && dataBool.getBool(currentNode.getValue())/*&& nextBranch*/) || (currentNode.isLeafFalseContradiction() && !dataBool.getBool(currentNode.getValue())/*&& !nextBranch*/))) {
+			else if(currentNode != null && ((currentNode.isLeafTrueContradiction() && dataBool.getBool(currentNode.getValue())) || (currentNode.isLeafFalseContradiction() && !dataBool.getBool(currentNode.getValue())))) {
 				if(currentNode.isLeafTrueContradiction()) currentValue = -currentNode.getValue();
 				else currentValue = currentNode.getValue();
 				for(PredicateMetaData pred : predicatesMetaDatas){
@@ -79,23 +78,12 @@ public class HeuristicSolver {
 			if(!same) {
 				//on crée le noeud de l'arbre
 				currentNode = new Node(Math.abs(currentValue), currentNode);
-				if(currentNode.getFather() != null) {
-					Node temp = currentNode;
-					if(nextBranch) {
-						currentNode.getFather().setLeafTrue(temp);
-					}
-					else {
-						currentNode.getFather().setLeafFalse(temp);
-					}
-				}
 			}
-			
-			nextBranch = currentValue>0;
 			
 			//seulement si on compte descendre
 			if(!contrad) {
 				//si la valeur du noeud est positive, on associe sa valeur absolue à true, false sinon			
-				dataBool.addValue(Math.abs(currentValue), nextBranch);
+				dataBool.addValue(Math.abs(currentValue), currentValue>0);
 				
 				
 				//on met à jour les prédicats pour considérer la nouvelle valeur. 
